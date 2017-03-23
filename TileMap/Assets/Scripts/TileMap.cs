@@ -8,14 +8,14 @@ using UnityEngine;
 public class TileMap : MonoBehaviour
 {
     public GameObject bloco;
-    public List<GameObject> parede = new List<GameObject>();
-
+    private List<GameObject> parede = new List<GameObject>();
+    [SerializeField]
+    private Vector3 offset;
 
     void Start()
     {
         Load("TileMap.txt");
-        //bloco1.transform.position = new Vector3(0, 0, 0);
-        //Instantiate(bloco1, new Vector3(2, 0, 0), Quaternion.identity);
+        
     }
     void Update()
     {
@@ -40,22 +40,29 @@ public class TileMap : MonoBehaviour
                 int numeroColunas = int.Parse(splitString[0]);
                 int numeroLinhas = int.Parse(splitString[1]);
 
-                line = theReader.ReadLine();
                 if (line != null)
                 {
-                    string[] bloco = line.Split(new string[] { " " }, System.StringSplitOptions.None);
                     for (int linha = 0; linha < numeroLinhas; linha++)
                     {
+                        line = theReader.ReadLine();
+                        string[] blocos = line.Split(new string[] { " " }, System.StringSplitOptions.None);
                         for (int coluna = 0; coluna < numeroColunas; coluna++)
-                        {
-                            parede.Add(new GameObject());
-                            parede[coluna + linha].transform.position = new Vector3(coluna * parede[0].GetComponent<Collider>().bounds.size.x, 0, linha * parede[0].GetComponent<Collider>().bounds.size.z);
-                            if (bloco[coluna + linha] == "1")
+                        {                            
+                            //parede.Add(Instantiate(bloco, new Vector3(coluna * bloco.GetComponent<Collider>().bounds.size.x, 0, linha * bloco.GetComponent<Collider>().bounds.size.z), Quaternion.identity));
+                            //parede[coluna + linha].transform.position = new Vector3(coluna * parede[0].GetComponent<Collider>().bounds.size.x, 0, linha * parede[0].GetComponent<Collider>().bounds.size.z);
+                            if (blocos[coluna] == "1")
                             {
-                                Instantiate(parede[coluna + linha], parede[coluna + linha].transform.position, Quaternion.identity);
+                                parede.Add(Instantiate(bloco));
+                                parede[coluna + linha * numeroColunas].SetActive(true);
+                                Debug.Log(bloco.GetComponent<MeshCollider>().sharedMesh.bounds.size);
+                                parede[coluna + linha*numeroColunas].transform.position = new Vector3(coluna * bloco.GetComponent<MeshCollider>().sharedMesh.bounds.size.x*2.0f, 0, linha * bloco.GetComponent<MeshCollider>().sharedMesh.bounds.size.z*2.0f);
+                                //Instantiate(parede[coluna + linha], parede[coluna + linha].transform.position, Quaternion.identity);
+                            }
+                            else
+                            {
+                                parede.Add(null);
                             }
                         }
-                        line = theReader.ReadLine();
                     }
                 }
             }
